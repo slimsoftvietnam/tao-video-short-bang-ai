@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8">
+    <title>@@title@@</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      /* @fontfaces */
+
+      /* The SlimAI paper series: a moving paper plate, K2D type, violet #7657FF, gold for step numbers only.
+         The component library below (badges, brand tiles, browser/app windows, glass bezel, rings, marker,
+         cursor, step tracker + openers, Google box, download bar, prompt card, link chip, task rows, website
+         sketch + chat widget, use-case cards, guide document, comment box, captions, end card) is shared by
+         every video — keep it, add what a scene needs. House rules: references/house-style.md. */
+      :root {
+        --ink:#1D1B3A; --ink2:#5B5873; --vio:#7657FF; --vio-hi:#A78BFA; --gold:#FFC857;
+        --ok:#1F9D55; --bad:#E5484D; --hi:#FFE14D; --sk:#DAD8E4; --blue:#1A73E8; --tc:#D97757; --teal:#0E9F9A;
+      }
+      * { margin:0; padding:0; box-sizing:border-box; }
+      html, body { width:1080px; height:1920px; overflow:hidden; background:#D8D8D8; }
+      body { font-family:"K2D","Segoe UI",sans-serif; color:var(--ink); -webkit-font-smoothing:antialiased; }
+
+      .scene { position:absolute; inset:0; }
+      .wrap  { position:absolute; inset:0; will-change:transform, opacity; }
+      .abs   { position:absolute; }
+
+      #bgv  { position:absolute; left:0; top:0; width:1080px; height:1920px; object-fit:cover; display:block; }
+      #wash { position:absolute; inset:0;
+              background:radial-gradient(ellipse 72% 56% at 50% 40%, rgba(255,255,255,0.34), rgba(255,255,255,0.12) 62%, rgba(255,255,255,0.03) 100%); }
+      /* the hook's suspense: the paper sinks into a dark vignette while the riser climbs;
+         the caption band and the mascot stay on paper */
+      #vig  { position:absolute; inset:0; opacity:0; visibility:hidden;
+              background:radial-gradient(ellipse 70% 52% at 50% 40%, rgba(12,8,40,0.45) 0%, rgba(8,5,28,0.84) 70%, rgba(5,3,20,0.94) 100%);
+              -webkit-mask-image:linear-gradient(180deg, #000 0%, #000 60%, transparent 76%);
+              mask-image:linear-gradient(180deg, #000 0%, #000 60%, transparent 76%); }
+      #flash { position:absolute; inset:0; background:#FFFFFF; opacity:0; visibility:hidden; }
+
+      svg.ic { fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; display:block; }
+      svg.ic.fill { fill:currentColor; }
+      svg.mk { display:block; fill:currentColor; }
+      .ln { position:absolute; left:0; top:0; overflow:visible; }
+      .sk { position:absolute; height:24px; border-radius:12px; background:var(--sk); }
+
+      /* round badges */
+      .rb { position:absolute; width:110px; height:110px; border-radius:50%; display:flex; align-items:center;
+            justify-content:center; color:#FFFFFF; font-weight:800; box-shadow:0 10px 22px rgba(28,22,40,0.32), 0 0 0 5px #FFFFFF; }
+      .rb svg { width:56%; height:56%; stroke-width:3; }
+      .rb.ok { background:var(--ok); } .rb.bad { background:var(--bad); } .rb.vio { background:var(--vio); }
+      .rb.gold { background:var(--gold); color:var(--ink); } .rb.wh { background:#FFFFFF; color:var(--vio); }
+      .rb.wh svg { stroke-width:2.4; }
+      .cn { position:absolute; width:140px; height:140px; border-radius:50%; background:var(--gold); color:var(--ink);
+            display:flex; align-items:center; justify-content:center; font-size:92px; font-weight:800; line-height:1;
+            box-shadow:0 14px 30px rgba(120,80,0,0.26), inset 0 -8px 0 rgba(0,0,0,0.08), 0 0 0 6px #FFFFFF; }
+      /* "1": one prompt, one step — violet, so it never reads as a step number */
+      .one { position:absolute; border-radius:50%; background:var(--vio); color:#FFFFFF; display:flex; align-items:center;
+             justify-content:center; font-weight:800; line-height:1;
+             box-shadow:0 16px 34px rgba(118,87,255,0.42), inset 0 -8px 0 rgba(0,0,0,0.12), 0 0 0 6px #FFFFFF; }
+
+      /* brand tiles: OpenAI black on white, Claude white on terracotta, GitHub black on white */
+      .lt { position:absolute; border-radius:28%; background:#FFFFFF; display:flex; align-items:center; justify-content:center;
+            color:#0D0D0D; box-shadow:0 22px 44px rgba(40,30,90,0.28), 0 0 0 5px #FFFFFF; }
+      .lt svg { width:62%; height:62%; }
+      .lt.tc { background:var(--tc); color:#FFFFFF; }
+      .lt.vio { background:var(--vio); color:#FFFFFF; }
+      .lt > img { width:66%; height:66%; object-fit:contain; display:block; }
+
+      /* a browser window: real pages and recordings read as evidence */
+      .win { position:absolute; border-radius:26px; background:#FFFFFF; overflow:hidden;
+             box-shadow:0 28px 58px rgba(20,16,30,0.28), 0 0 0 1px #E2E2EA; }
+      .win .bar { position:absolute; left:0; top:0; right:0; height:64px; background:#F1F1F5; border-bottom:1px solid #E2E2EA; }
+      .win .bar i { position:absolute; top:24px; width:16px; height:16px; border-radius:50%; }
+      .win .bar i:nth-child(1) { left:24px; background:#FF5F57; } .win .bar i:nth-child(2) { left:50px; background:#FEBC2E; }
+      .win .bar i:nth-child(3) { left:76px; background:#28C840; }
+      .win .url { position:absolute; left:112px; right:22px; top:11px; height:42px; border-radius:21px; background:#FFFFFF;
+                  font-size:26px; font-weight:600; color:#5B5873; line-height:42px; padding-left:48px; white-space:nowrap; overflow:hidden; }
+      .win .url svg { position:absolute; left:17px; top:11px; width:20px; height:20px; color:#5B5873; }
+      .win .url i.s { position:absolute; left:48px; top:13px; width:300px; height:16px; border-radius:8px; background:#E4E2EC; }
+      .win .body { position:absolute; left:0; right:0; top:64px; bottom:0; overflow:hidden; background:#FFFFFF; }
+      .win .body > img, .win .body > video { position:absolute; display:block; }
+      /* an app window (the recording carries its own title bar) */
+      .card { position:absolute; border-radius:22px; background:#FFFFFF; overflow:hidden;
+              box-shadow:0 28px 58px rgba(20,16,30,0.28), 0 0 0 1px #E2E2EA; }
+      .card > video, .card > img { position:absolute; left:0; top:0; display:block; }
+      /* the camera over a recording: zoom and pan without touching the timed clip */
+      .cam { position:absolute; left:0; top:0; transform-origin:0 0; will-change:transform; }
+      .cam > video, .cam > img { position:absolute; left:0; top:0; display:block; }
+      /* the hook's glass bezel, lit from behind */
+      .glass { position:absolute; border-radius:38px;
+               background:linear-gradient(140deg, rgba(255,255,255,0.72), rgba(255,255,255,0.22) 48%, rgba(255,255,255,0.5));
+               box-shadow:0 46px 96px rgba(40,24,120,0.38), inset 0 0 0 2px rgba(255,255,255,0.9), inset 0 0 36px rgba(255,255,255,0.5); }
+
+      /* marks on the evidence */
+      .ring { position:absolute; border-radius:16px; border:7px solid var(--vio);
+              box-shadow:0 0 0 4px rgba(255,255,255,0.92), 0 0 24px rgba(118,87,255,0.6); opacity:0; visibility:hidden; }
+      .hl { position:absolute; border-radius:8px; background:var(--hi); mix-blend-mode:multiply; transform-origin:0% 50%; }
+      .cur { position:absolute; width:100px; height:100px; z-index:20; filter:drop-shadow(0 4px 6px rgba(0,0,0,0.45));
+             opacity:0; visibility:hidden; }
+      .cp { position:absolute; width:96px; height:96px; margin:-48px 0 0 -48px; border-radius:50%; border:7px solid var(--vio);
+            opacity:0; visibility:hidden; }
+
+      /* the three steps: a tracker at the top of the frame */
+      #trk { position:absolute; left:0; top:92px; width:1080px; height:130px; opacity:0; visibility:hidden; }
+      .tk { position:absolute; top:0; width:112px; height:112px; border-radius:30px; background:#FFFFFF; display:flex; align-items:center;
+            justify-content:center; color:var(--vio); box-shadow:0 10px 22px rgba(28,22,40,0.18); }
+      .tk > svg { width:62%; height:62%; stroke-width:2.2; }
+      .tk .tn, .st .tn { position:absolute; left:-12px; top:-12px; width:46px; height:46px; border-radius:50%; background:var(--gold);
+                         color:var(--ink); font-size:30px; font-weight:800; line-height:46px; text-align:center; box-shadow:0 0 0 4px #FFFFFF; }
+      .tk .tr { position:absolute; inset:-11px; border-radius:40px; border:6px solid var(--vio);
+                box-shadow:0 0 18px rgba(118,87,255,0.55); opacity:0; visibility:hidden; }
+      .tk .dn { position:absolute; right:-14px; top:-14px; width:50px; height:50px; border-radius:50%; background:var(--ok); color:#FFFFFF;
+                display:flex; align-items:center; justify-content:center; box-shadow:0 0 0 4px #FFFFFF; opacity:0; visibility:hidden; }
+      .tk .dn svg { width:32px; height:32px; stroke-width:3.4; }
+      /* a step opener: the tile that flies up into the tracker */
+      .st { position:absolute; width:300px; height:300px; border-radius:84px; background:#FFFFFF; display:flex; align-items:center;
+            justify-content:center; color:var(--vio); box-shadow:0 30px 60px rgba(40,30,90,0.30), 0 0 0 6px #FFFFFF; }
+      .st > svg { width:64%; height:64%; stroke-width:1.9; overflow:visible; }
+
+      /* the Google search, re-drawn (Google answers automated browsers with a reCAPTCHA) */
+      .gs { position:absolute; left:60px; width:960px; height:132px; border-radius:66px; background:#FFFFFF; display:flex; align-items:center;
+            gap:26px; padding:0 44px; box-shadow:0 14px 32px rgba(28,22,40,0.18), inset 0 0 0 2px #DFE1E5; }
+      .gs > svg { width:56px; height:56px; color:#9AA0A6; flex:0 0 auto; }
+      .gs .q { position:relative; flex:1 1 auto; height:80px; font-size:64px; font-weight:700; line-height:80px; color:#202124; white-space:nowrap; }
+      .gs .q span { display:none; }
+      .gs .car { display:inline-block; width:5px; height:60px; margin-left:4px; vertical-align:-8px; background:var(--blue); }
+
+      /* the download and the laptop */
+      .dlp { position:absolute; height:124px; border-radius:62px; background:#FFFFFF; display:flex; align-items:center; gap:26px;
+             padding:0 40px 0 22px; box-shadow:0 18px 38px rgba(28,22,40,0.22); }
+      .dlp .di { width:84px; height:84px; border-radius:50%; background:var(--vio); color:#FFFFFF; display:flex; align-items:center;
+                 justify-content:center; flex:0 0 auto; }
+      .dlp .di svg { width:50px; height:50px; stroke-width:2.6; }
+      .dlp .bar { position:relative; flex:1 1 auto; height:26px; border-radius:13px; background:#E9E6F5; overflow:hidden; }
+      .dlp .bar i { position:absolute; left:0; top:0; bottom:0; width:100%; border-radius:13px;
+                    background:linear-gradient(90deg, var(--vio), var(--vio-hi)); transform-origin:0 50%; }
+
+      /* prompt cards: the words light as they are said */
+      .pc { position:absolute; left:50px; width:980px; border-radius:40px; background:#FFFFFF; padding:28px 42px 36px;
+            box-shadow:0 26px 54px rgba(28,22,40,0.24), inset 0 0 0 4px rgba(118,87,255,0.18); }
+      .pc .ph { display:flex; align-items:center; gap:18px; height:70px; margin-bottom:14px; }
+      .pc .ph .oai { width:66px; height:66px; border-radius:18px; background:#0D0D0D; color:#FFFFFF; display:flex; align-items:center;
+                     justify-content:center; flex:0 0 auto; }
+      .pc .ph .oai svg { width:42px; height:42px; }
+      .pc .ph b { font-size:44px; font-weight:800; color:var(--vio); }
+      .pc .ph .cpy { margin-left:auto; width:66px; height:66px; border-radius:18px; background:#F1EEFF; color:var(--vio);
+                     display:flex; align-items:center; justify-content:center; }
+      .pc .ph .cpy svg { width:38px; height:38px; }
+      .pc .lk { display:inline-flex; align-items:center; gap:12px; height:58px; border-radius:29px; background:#F4F2FB; padding:0 22px 0 12px;
+                font-size:30px; font-weight:700; color:#3B3560; margin-bottom:16px; white-space:nowrap; }
+      .pc .lk svg { width:40px; height:40px; color:#0D1117; }
+      .pc .pt { font-size:56px; font-weight:700; line-height:1.38; color:var(--ink); }
+      .pc .pt .w { opacity:0.2; }
+      .pc .snd { position:absolute; right:30px; bottom:-38px; width:96px; height:96px; border-radius:50%; background:var(--vio); color:#FFFFFF;
+                 display:flex; align-items:center; justify-content:center; box-shadow:0 12px 26px rgba(118,87,255,0.45), 0 0 0 6px #FFFFFF; }
+      .pc .snd svg { width:48px; height:48px; }
+
+      /* the link travelling from GitHub into the agent */
+      .chip { position:absolute; height:78px; border-radius:39px; background:#FFFFFF; display:flex; align-items:center; gap:14px;
+              padding:0 28px 0 14px; font-size:31px; font-weight:700; color:var(--ink); white-space:nowrap;
+              box-shadow:0 16px 34px rgba(28,22,40,0.28), 0 0 0 4px var(--vio); }
+      .chip svg { width:52px; height:52px; color:#0D1117; }
+
+      /* the agent at work */
+      .task { position:absolute; width:790px; height:124px; border-radius:32px; background:#FFFFFF; display:flex; align-items:center; gap:26px;
+              padding:0 28px; font-size:56px; font-weight:700; color:var(--ink); white-space:nowrap; box-shadow:0 16px 34px rgba(28,22,40,0.18); }
+      .task .ti { width:80px; height:80px; border-radius:24px; background:#F1EEFF; color:var(--vio); display:flex; align-items:center;
+                  justify-content:center; flex:0 0 auto; }
+      .task .ti svg { width:48px; height:48px; stroke-width:2.4; }
+      .task .tb { margin-left:auto; position:relative; width:78px; height:78px; border-radius:50%; border:5px dashed #CFCBE0; flex:0 0 auto; }
+      .task .tb .ck { position:absolute; inset:-5px; border-radius:50%; background:var(--ok); color:#FFFFFF; display:flex; align-items:center;
+                      justify-content:center; opacity:0; visibility:hidden; }
+      .task .tb .ck svg { width:46px; height:46px; stroke-width:3.4; }
+      .spin { position:absolute; border-radius:50%; border:8px dashed var(--vio-hi); }
+
+      /* a website — anyone's: a sketch, nothing to read; its chat widget and panel */
+      .site .body { background:#FFFFFF; }
+      .site .nlogo { position:absolute; left:40px; top:26px; width:52px; height:52px; border-radius:14px; }
+      .site .navb { position:absolute; left:0; right:0; top:104px; height:2px; background:#EEEDF3; }
+      .site .hero { position:absolute; left:40px; top:470px; width:880px; height:330px; border-radius:28px; overflow:hidden; }
+      .site .hero i { position:absolute; border-radius:50%; background:rgba(255,255,255,0.28); }
+      .site .fc { position:absolute; top:850px; width:280px; height:200px; border-radius:24px; border:2px solid #ECEAF3; background:#FFFFFF; }
+      .site .fc b { position:absolute; left:24px; top:24px; width:64px; height:64px; border-radius:18px; }
+      .wd { position:absolute; width:120px; height:120px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+            color:#FFFFFF; box-shadow:0 16px 32px rgba(40,30,90,0.35), 0 0 0 5px #FFFFFF; }
+      .wd svg { width:54%; height:54%; stroke-width:2.4; }
+      .pnl { position:absolute; width:500px; height:600px; border-radius:30px; background:#FFFFFF; overflow:hidden;
+             box-shadow:0 26px 56px rgba(28,22,40,0.32), 0 0 0 1px #E6E3F0; }
+      .pnl .hd { position:absolute; left:0; right:0; top:0; height:100px; display:flex; align-items:center; gap:18px; padding:0 24px; }
+      .pnl .hd .av { width:62px; height:62px; border-radius:50%; background:#FFFFFF; display:flex; align-items:center; justify-content:center; }
+      .pnl .hd .av svg { width:38px; height:38px; stroke-width:2.4; }
+      .pnl .hd i { width:180px; height:20px; border-radius:10px; background:rgba(255,255,255,0.8); }
+      .bb { position:absolute; border-radius:24px; padding:16px 22px 8px; }
+      .bb i { display:block; height:16px; border-radius:8px; margin-bottom:10px; }
+      .bb.bot { background:#F3F2F8; } .bb.bot i { background:#CBC7DD; }
+      .bb.me { background:#EDE8FF; } .bb.me i { background:#B9ABF5; }
+      .pdfc { position:absolute; display:flex; align-items:center; gap:10px; height:56px; border-radius:16px; background:#FFFFFF;
+              border:2px solid #ECEAF3; padding:0 14px 0 8px; }
+      .pdfc svg { width:34px; height:41px; }
+      .pdfc i { width:110px; height:14px; border-radius:7px; background:#D9D6E6; }
+
+      /* the use cases */
+      .uc { position:absolute; width:460px; height:500px; border-radius:40px; background:#FFFFFF; box-shadow:0 24px 50px rgba(28,22,40,0.22); }
+      .uc .big { position:absolute; left:140px; top:36px; width:180px; height:180px; border-radius:50%; display:flex; align-items:center;
+                 justify-content:center; color:#FFFFFF; }
+      .uc .big svg { width:56%; height:56%; stroke-width:2.2; }
+      .uc .av { position:absolute; width:64px; height:64px; border-radius:50%; display:flex; align-items:center; justify-content:center; }
+      .uc .av svg { width:60%; height:60%; stroke-width:2.4; }
+      .oks { position:absolute; height:124px; border-radius:62px; background:#FFFFFF; display:flex; align-items:center; gap:22px; padding:0 26px;
+             box-shadow:0 18px 38px rgba(28,22,40,0.22); }
+      .oks b { width:84px; height:84px; border-radius:50%; background:var(--ok); color:#FFFFFF; display:flex; align-items:center; justify-content:center; }
+      .oks b svg { width:50px; height:50px; stroke-width:3.4; }
+
+      /* the guide document */
+      .doc { position:absolute; border-radius:32px; background:#FFFFFF; box-shadow:0 24px 50px rgba(28,22,40,0.24); }
+      .slot { position:absolute; width:100px; height:100px; border-radius:26px; background:#F1EEFF; }
+
+      /* comment box */
+      .cbox { position:absolute; display:flex; align-items:center; gap:20px; border-radius:999px; background:#FFFFFF;
+              border:5px solid var(--gold); padding:14px 16px 14px 32px; box-shadow:0 16px 34px rgba(28,22,40,0.22); }
+      .cbox .txt { position:relative; flex:1 1 auto; height:84px; font-size:60px; font-weight:800; line-height:84px; color:var(--ink); white-space:nowrap; }
+      .cbox .txt span.ch { display:none; }
+      .cbox .send { flex:0 0 auto; width:100px; height:100px; border-radius:50%; background:var(--vio); color:#FFFFFF;
+                    display:flex; align-items:center; justify-content:center; }
+      .cbox .send svg { width:52px; height:52px; }
+
+      /* captions: dark capitals, the spoken word lit in violet */
+      #kara { position:absolute; inset:0; pointer-events:none; }
+      .kc { position:absolute; left:60px; right:60px; bottom:196px; text-align:center; }
+      .kc.side { left:470px; right:34px; }
+      .kc.side.hk { left:600px; right:30px; }    /* beside the big pointing mascot (its arm reaches x 600) */
+      /* over the dark 3D graphic: white capitals, a dark halo */
+      .kc.dk .kin { color:#FFFFFF; }
+      .kc.dk .kb { text-shadow:0 0 3px #000000, 0 0 6px #000000, 0 0 12px rgba(0,0,0,0.95), 0 0 24px rgba(0,0,0,0.75); }
+      .kin { display:block; font-size:60px; font-weight:800; line-height:1.36; text-transform:uppercase; color:var(--ink); opacity:0; }
+      .kw { position:relative; display:inline-block; padding:0 8px; margin:0 -3px; }
+      .kb { position:relative; text-shadow:0 0 3px #FFFFFF, 0 0 6px #FFFFFF, 0 0 12px rgba(255,255,255,0.95), 0 0 24px rgba(255,255,255,0.7); }
+      .ka { position:absolute; left:0; top:4px; right:0; bottom:4px; border-radius:14px;
+            background:var(--vio); box-shadow:0 0 0 5px var(--vio), 0 8px 18px rgba(118,87,255,0.35);
+            opacity:0; visibility:hidden; }
+
+      /* end card */
+      #slimai-ring { position:absolute; left:50%; top:800px; width:680px; height:240px; margin-left:-340px;
+                     border-radius:30px; border:3px solid var(--vio); opacity:0; }
+      #slimai-logo { position:absolute; left:230px; top:822px; width:620px; opacity:0; visibility:hidden; }
+      #slimai-slogan { position:absolute; left:60px; top:1090px; width:960px; text-align:center;
+                       font-family:"K2D","Segoe UI",sans-serif; font-size:46px; font-weight:700; letter-spacing:0.02em;
+                       color:var(--ink); opacity:0; visibility:hidden; }
+      #cursor2 { position:absolute; left:290px; top:912px; width:104px; height:104px; z-index:30;
+                 filter:drop-shadow(0 4px 6px rgba(0,0,0,0.45)); pointer-events:none; opacity:0; visibility:hidden; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="@@end@@" data-width="1080" data-height="1920" data-fps="30">
+
+      <!-- icons, drawn once: Lucide (ISC). Brand marks are read from the files in assets/logos
+           (SOURCES.md) by build.py — never retyped. The PDF icon is drawn (house rule). -->
+      <svg id="sprite" width="0" height="0" style="position:absolute; width:0; height:0;" aria-hidden="true">
+        <defs>
+          <marker id="ah" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#7657FF" /></marker>
+          <symbol id="mk-openai" viewBox="0 0 256 260"><path d="@@path:openai@@" /></symbol>
+          <symbol id="mk-claude" viewBox="0 0 24 24"><path d="@@path:claude@@" /></symbol>
+          <symbol id="mk-github" viewBox="0 0 24 24"><path d="@@path:github@@" /></symbol>
+          <symbol id="pdf" viewBox="0 0 100 120">
+            <path d="M16 4h50l26 26v80a6 6 0 0 1-6 6H16a6 6 0 0 1-6-6V10a6 6 0 0 1 6-6z" fill="#FFFFFF" stroke="#3A3A4A" stroke-width="4" stroke-linejoin="round" />
+            <path d="M66 4v20a6 6 0 0 0 6 6h20" fill="#ECECF2" stroke="#3A3A4A" stroke-width="4" stroke-linejoin="round" />
+            <path d="M26 44h44M26 104h52" fill="none" stroke="#CDCBD8" stroke-width="5" stroke-linecap="round" />
+            <rect x="2" y="60" width="76" height="34" rx="7" fill="#E5252A" />
+            <text x="40" y="86" text-anchor="middle" font-family="K2D, Segoe UI, sans-serif" font-weight="800" font-size="27" fill="#FFFFFF">PDF</text>
+          </symbol>
+          <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5" /></symbol>
+          <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></symbol>
+          <symbol id="i-star" viewBox="0 0 24 24"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z" /></symbol>
+          <symbol id="i-sparkles" viewBox="0 0 24 24"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z" /></symbol>
+          <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></symbol>
+          <symbol id="i-lock" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></symbol>
+          <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" /><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" /></symbol>
+          <symbol id="i-send" viewBox="0 0 24 24"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z" /><path d="m21.854 2.147-10.94 10.939" /></symbol>
+          <symbol id="i-msg" viewBox="0 0 24 24"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" /></symbol>
+          <symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></symbol>
+          <symbol id="i-file" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" /><path d="M14 2v4a2 2 0 0 0 2 2h4" /><path d="M10 9H8" /><path d="M16 13H8" /><path d="M16 17H8" /></symbol>
+          <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></symbol>
+          <symbol id="i-user" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></symbol>
+          <symbol id="i-cap" viewBox="0 0 24 24"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z" /><path d="M22 10v6" /><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5" /></symbol>
+          <symbol id="i-headset" viewBox="0 0 24 24"><path d="M3 11h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-5Zm0 0a9 9 0 1 1 18 0m0 0v5a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3Z" /><path d="M21 16v2a4 4 0 0 1-4 4h-5" /></symbol>
+          <symbol id="i-bot" viewBox="0 0 24 24"><path d="M12 8V4H8" /><rect width="16" height="12" x="4" y="8" rx="2" /><path d="M2 14h2" /><path d="M20 14h2" /><path d="M15 13v2" /><path d="M9 13v2" /></symbol>
+          <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" /><path d="M2 12h20" /></symbol>
+          <symbol id="i-code" viewBox="0 0 24 24"><path d="m18 16 4-4-4-4" /><path d="m6 8-4 4 4 4" /><path d="m14.5 4-5 16" /></symbol>
+          <symbol id="i-laptop" viewBox="0 0 24 24"><path d="M20 16V7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v9m16 0H4m16 0 1.28 2.55a1 1 0 0 1-.9 1.45H3.62a1 1 0 0 1-.9-1.45L4 16" /></symbol>
+          <symbol id="i-laptopdl" viewBox="0 0 24 24"><path d="M20 16V7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v9m16 0H4m16 0 1.28 2.55a1 1 0 0 1-.9 1.45H3.62a1 1 0 0 1-.9-1.45L4 16" /><path d="M12 7.5v5" /><path d="m9.5 10.5 2.5 2.5 2.5-2.5" /></symbol>
+          <symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" x2="12" y1="15" y2="3" /></symbol>
+          <symbol id="i-wrench" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" /></symbol>
+          <symbol id="i-play" viewBox="0 0 24 24"><polygon points="6 3 20 12 6 21 6 3" /></symbol>
+          <symbol id="i-ff" viewBox="0 0 24 24"><polygon points="13 19 22 12 13 5 13 19" /><polygon points="2 19 11 12 2 5 2 19" /></symbol>
+          <symbol id="i-copy" viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2" ry="2" /><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" /></symbol>
+          <symbol id="cursor" viewBox="0 0 24 24"><path d="M5.5 3.21V20.8c0 .45.54.67.85.35l4.86-4.86a.5.5 0 0 1 .35-.15h6.87a.5.5 0 0 0 .35-.85L6.35 2.86a.5.5 0 0 0-.85.35Z" fill="#ffffff" stroke="#0a0f1e" stroke-width="1.3" stroke-linejoin="round" /></symbol>
+        </defs>
+      </svg>
+
+      <video id="bgv" class="clip" data-start="0" data-duration="@@end@@" data-track-index="0" src="assets/video/paper-bg.mp4" muted playsinline></video>
+      <div id="wash"></div>
+      <div id="vig"></div>

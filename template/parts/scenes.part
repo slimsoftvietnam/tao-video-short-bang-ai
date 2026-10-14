@@ -1,0 +1,109 @@
+
+      <!-- Scenes that hold a timed <video> are untimed containers (class="scene" only): the seam-stamp .wrap
+           autoAlpha gates them — a timed video inside a timed element is a lint error. Scenes without a video
+           may be timed (class="scene clip" + data-start/data-duration from build.py).
+
+           EVERY SCENE BELOW IS AN EXAMPLE for the example SCRIPT.md. Rebuild them for each video: one scene per
+           entry of build.py SC, each cue at the syllable time of its word (syl-times.json). -->
+
+      <!-- ═══ h1 · HOOK — câu 1 — the house opening: the author's own clip in a glass window lit from behind,
+           turning to the viewer while the riser climbs; the product marks above it and nothing else; a dead
+           stop (flash + snap) on the sentence's last word. Replace the drawn placeholder screen with the clip:
+             <video id="v-hook" class="clip" data-start="0" data-duration="5.20" data-track-index="2"
+                    src="assets/video/hook.mp4" muted playsinline style="width:1000px; height:509px;"></video> ═══ -->
+      <div class="scene" id="sc-h1">
+        <div class="wrap" id="w-h1">
+          <div class="abs" id="h1-glow" data-layout-allow-overflow="true" style="left:-80px; top:144px; width:1240px; height:1200px;
+               background:radial-gradient(ellipse 48% 44% at 50% 50%, rgba(118,87,255,0.62), rgba(118,87,255,0.2) 58%, rgba(118,87,255,0) 76%);"></div>
+          <div class="glass" id="h1-win" style="left:30px; top:480px; width:1020px; height:529px;">
+            <div class="card" style="left:10px; top:10px; width:1000px; height:509px;">
+              <div class="abs" style="left:0; top:0; width:1000px; height:509px; background:linear-gradient(180deg, #F7F6FC, #ECE8FB);"></div>
+              <div class="bb me" style="left:520px; top:56px; width:420px;"><i style="width:340px;"></i><i style="width:220px;"></i></div>
+              <div class="bb bot" style="left:60px; top:186px; width:560px;"><i style="width:480px;"></i><i style="width:500px;"></i><i style="width:320px;"></i></div>
+              <div class="bb me" style="left:600px; top:356px; width:340px;"><i style="width:260px;"></i></div>
+            </div>
+          </div>
+          <div class="lt" id="h1-gpt" style="left:330px; top:300px; width:136px; height:136px;"><svg class="mk" viewBox="0 0 256 260"><use href="#mk-openai" /></svg></div>
+          <div class="lt tc" id="h1-cl" style="left:614px; top:300px; width:136px; height:136px;"><svg class="mk" viewBox="0 0 24 24"><use href="#mk-claude" /></svg></div>
+        </div>
+      </div>
+
+      <!-- ═══ s1 · BƯỚC 1 — câu 2 — a step opens on its tile (an icon that DEPICTS the step + the gold number);
+           once the step is named the tile flies into the tracker; then the step's picture — here the two apps
+           land on a laptop, each mark on its name ═══ -->
+      <div class="scene clip" id="sc-s1" data-start="@@start:s1@@" data-duration="@@dur:s1@@" data-track-index="1">
+        <div class="wrap" id="w-s1">
+          <div class="abs" id="s1-op" style="left:0; top:0; width:1080px; height:1500px; z-index:5;">
+            <div class="st" id="s1-t" style="left:390px; top:520px;"><svg class="ic" viewBox="0 0 24 24"><use href="#i-laptopdl" /></svg></div>
+            <div class="cn" id="s1-n" style="left:300px; top:460px;">1</div>
+          </div>
+          <svg class="abs" id="s1-lap" viewBox="0 0 260 180" style="left:280px; top:1060px; width:520px; height:360px; overflow:visible;">
+            <rect x="34" y="8" width="192" height="132" rx="12" fill="#FFFFFF" stroke="#2E2A48" stroke-width="6" />
+            <rect x="46" y="20" width="168" height="108" rx="6" fill="#F1EEFF" />
+            <path d="M14 146h232l12 22a6 6 0 0 1-5 8H7a6 6 0 0 1-5-8z" fill="#FFFFFF" stroke="#2E2A48" stroke-width="6" stroke-linejoin="round" />
+            <path d="M108 160h44" stroke="#2E2A48" stroke-width="5" stroke-linecap="round" />
+          </svg>
+          <div class="lt" id="s1-gpt" style="z-index:3; left:405px; top:1150px; width:110px; height:110px;"><svg class="mk" viewBox="0 0 256 260"><use href="#mk-openai" /></svg></div>
+          <div class="lt tc" id="s1-cl" style="z-index:3; left:565px; top:1150px; width:110px; height:110px;"><svg class="mk" viewBox="0 0 24 24"><use href="#mk-claude" /></svg></div>
+          <div class="rb ok" id="s1-ok" style="left:770px; top:1020px; width:120px; height:120px;"><svg class="ic" viewBox="0 0 24 24"><use href="#i-check" /></svg></div>
+        </div>
+      </div>
+
+      <!-- ═══ p1 · CÂU LỆNH — câu 3–4 — the prompt in full on its own card, every word lit as it is said
+           (build.py PROMPTS; karaoke.py SKIP that sentence); a "1" badge on "đúng một câu lệnh" ═══ -->
+      <div class="scene clip" id="sc-p1" data-start="@@start:p1@@" data-duration="@@dur:p1@@" data-track-index="1">
+        <div class="wrap" id="w-p1">
+          <div class="pc" id="p1-pc" style="top:560px;">
+            <div class="ph"><span class="oai"><svg class="mk" viewBox="0 0 256 260"><use href="#mk-openai" /></svg></span><b>Prompt</b><span class="cpy"><svg class="ic" viewBox="0 0 24 24"><use href="#i-copy" /></svg></span></div>
+            <div class="pt">@@p:4@@</div>
+            <div class="snd" id="p1-snd"><svg class="ic" viewBox="0 0 24 24"><use href="#i-send" /></svg></div>
+          </div>
+          <div class="one" id="p1-one" style="left:20px; top:500px; width:130px; height:130px; font-size:88px;">1</div>
+        </div>
+      </div>
+
+      <!-- ═══ cta · COMMENT — câu 5 — a comment CTA is a chat input: the keyword typed on its word, the send
+           button pops on "gửi" ═══ -->
+      <div class="scene clip" id="sc-cta" data-start="@@start:cta@@" data-duration="@@dur:cta@@" data-track-index="1">
+        <div class="wrap" id="w-cta">
+          <div class="cbox" id="cta-cb" style="left:60px; right:60px; top:860px;">
+            <svg class="ic" viewBox="0 0 24 24" style="width:64px; height:64px; color:#F0A21A; flex:0 0 auto;"><use href="#i-msg" /></svg>
+            <div class="txt"><span id="cta-ph" style="color:#8E89A8; font-weight:700;">Bình luận…</span><span class="abs" id="cta-w" style="left:0; top:0;">@@ctaq@@</span></div>
+            <div class="send" id="cta-snd"><svg class="ic" viewBox="0 0 24 24"><use href="#i-send" /></svg></div>
+          </div>
+          <svg class="ic abs" id="cta-pl" viewBox="0 0 24 24" style="left:900px; top:872px; width:90px; height:90px; color:var(--vio);"><use href="#i-send" /></svg>
+        </div>
+      </div>
+
+      <!-- ═══ ec · END CARD — the house card at 2x: your logo, the cursor clicks it, the slogan (build.py
+           BRAND_LOGO, SLOGAN) ═══ -->
+      <div class="scene clip" id="sc-ec" data-start="@@start:ec@@" data-duration="@@dur:ec@@" data-track-index="1" data-layout-allow-occlusion="true" data-layout-allow-overlap="true">
+        <div class="wrap" id="w-ec">
+          <div id="slimai-ring"></div>
+          <img id="slimai-logo" src="@@logo@@" alt="Logo">
+          <div id="slimai-slogan">@@slogan@@</div>
+          <svg id="cursor2" viewBox="0 0 24 24" fill="none">
+            <path d="M5.5 3.21V20.8c0 .45.54.67.85.35l4.86-4.86a.5.5 0 0 1 .35-.15h6.87a.5.5 0 0 0 .35-.85L6.35 2.86a.5.5 0 0 0-.85.35Z" fill="#ffffff" stroke="#0a0f1e" stroke-width="1.3" stroke-linejoin="round" />
+          </svg>
+        </div>
+      </div>
+
+      <!-- stage level: the flash, the step tracker (it outlives every chapter cut), captions, the voice.
+           A hook mascot (optional, your own transparent .webm) goes here, BIG in the lower-left corner with
+           its feet off the frame, leaving under the hook's flash (house-style.md §2):
+             <div class="abs" id="m1w" style="left:-60px; top:1309px; width:694px; height:843px;">
+               <video id="m1" class="clip" data-start="0.25" data-duration="4.15" data-track-index="5"
+                      src="assets/video/mascot.webm" muted playsinline style="width:694px; height:843px; display:block;"></video>
+             </div> -->
+      <div id="flash"></div>
+      <div id="trk" data-layout-allow-overflow="true">
+        @@trk@@
+      </div>
+
+      <div id="kara" data-layout-allow-overlap="true"></div>
+
+      <audio id="vo" class="clip" data-start="0" data-duration="@@vo@@" data-track-index="8" src="assets/audio/voiceover.mp3" data-volume="1" data-audio-group="voiceover"></audio>
+
+      <!-- sfx cues are written by scripts/add-sfx.py -->
+
+    </div>
