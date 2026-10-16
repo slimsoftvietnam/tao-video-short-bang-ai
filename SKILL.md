@@ -2,7 +2,8 @@
 name: tao-video-short-bang-ai
 description: >-
   Build a vertical narrated short (TikTok/Reels/Shorts, 1080x1920) in HyperFrames from a script and
-  a voiceover — recorded by the author or a TTS/ElevenLabs read — with picture and voice exactly in
+  a voiceover — recorded by the author, read by the author's own TTS (ElevenLabs …), or made with the
+  free built-in Microsoft voice (Edge TTS, Vietnamese, no API key) — with picture and voice exactly in
   sync, in the SlimAI house style: a moving paper background, K2D type, violet accents, real logos and
   real footage instead of text, karaoke captions, prompts lit word by word, a comment-box CTA, the house
   sound set (thud, swoosh, pop, laser, shutter, a hand-cut riser, a music bed) and a brand end card.
@@ -41,7 +42,7 @@ Read `/hyperframes` for routing and `/hyperframes-core` for the composition cont
 
 No mascot ships with the skill. Add your own (a transparent `.webm`) if you have one — §Bookends.
 
-**Requirements:** Node 22+, Python 3.10+ (`pip install -r requirements.txt`: faster-whisper, numpy,
+**Requirements:** Node 22+, Python 3.10+ (`pip install -r requirements.txt`: faster-whisper, edge-tts, numpy,
 Pillow), ffmpeg on PATH, and the HyperFrames skills (`npx --yes hyperframes skills update
 motion-doctrine`). HyperFrames itself runs through `npx` at the version pinned in the project's
 `package.json`; its first run downloads a headless Chrome, `asr.py`'s first run the Whisper model.
@@ -83,6 +84,30 @@ motion-doctrine`). HyperFrames itself runs through `npx` at the version pinned i
    ```
 8. **Open the preview and hand over the link.** `npx hyperframes preview --background`. Never render
    straight after a change — the author has said so twice. **Render only when asked.**
+
+## No recording yet? Offer the three voice sources
+
+When the author sends a script without a voice file, do not stop and do not silently pick one. Offer,
+in this order, and let them choose:
+
+1. **Tự thu âm** — their own voice sounds most natural and is what the channel uses; give them the
+   script as text (one sentence per line) and wait for the file.
+2. **Their own TTS service** (ElevenLabs, Google, OpenAI …) — they paste the API key in chat; use it
+   only as an inline environment variable on the one command that needs it, never write it to a file
+   (house-style §8), and tell them to rotate it afterwards.
+3. **The free Microsoft voice that ships with this skill** — no account, no key:
+   ```bash
+   python scripts/tts.py                               # vi-VN-HoaiMyNeural (nữ)
+   python scripts/tts.py --voice vi-VN-NamMinhNeural   # nam
+   python scripts/tts.py --rate +10%                   # faster read
+   ```
+   It reads `SCRIPT.md` sentence by sentence (so write the script there first), joins them with clean
+   pauses, levels the result to −21.0 LUFS (prep-voice.py) and leaves `assets/audio/voiceover.mp3`
+   ready for the voice-first chain below. Needs internet. Say plainly that it sounds more mechanical
+   than a recording, and play/hand over the voice before building the picture so they can change voice
+   or speed cheaply.
+
+If the author just says "dùng giọng AI miễn phí" / "tạo giọng luôn", go straight to option 3.
 
 ## Two modes
 

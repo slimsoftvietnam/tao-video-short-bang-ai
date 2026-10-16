@@ -38,6 +38,7 @@ python scripts/audit-sync.py 0 110       # every cue vs the sentence playing the
 |---|---|---|
 | `new-project.py` | **yes** | — run from the skill: template + scripts + assets into a new folder |
 | `prep-voice.py` | **yes** | `--tempo` only when the author chooses a faster read |
+| `tts.py` | **yes** | — free Vietnamese voice from SCRIPT.md (Microsoft Edge TTS, no key): `--voice vi-VN-NamMinhNeural`, `--rate +10%`; levels it with prep-voice.py |
 | `asr.py` | mostly | `language="vi"`; model as argv (`small`, `medium`) |
 | `plan-beats.py` | no | the `SCENES` table — sentence ranges per scene |
 | `align-asr.py` | **yes** | — |

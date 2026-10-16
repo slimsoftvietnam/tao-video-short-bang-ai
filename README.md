@@ -11,14 +11,14 @@ từng âm tiết, theo đúng phong cách các video của SlimAI:
 - ô comment ở cuối;
 - bộ sound effect, nhạc nền và end card.
 
-Bạn chỉ cần đưa kịch bản và file giọng đọc. Claude tự căn giọng, dựng hình, đặt âm thanh, rồi **mở bản xem trước** để bạn
+Bạn chỉ cần đưa kịch bản và file giọng đọc. **Chưa có giọng đọc?** Skill có sẵn giọng tiếng Việt miễn phí của Microsoft (nữ HoaiMy, nam NamMinh) — Claude sẽ hỏi bạn muốn tự thu, dùng API TTS của bạn, hay dùng giọng miễn phí này. Claude tự căn giọng, dựng hình, đặt âm thanh, rồi **mở bản xem trước** để bạn
 duyệt. Claude chỉ xuất MP4 khi bạn yêu cầu.
 
 ## Skill làm được gì
 
 | | |
 |---|---|
-| **Đầu vào** | Kịch bản (mỗi câu một dòng), file giọng đọc (`.wav .mp3 .m4a`, tự thu hoặc TTS/ElevenLabs), tùy chọn: clip quay màn hình, video 9:16, link trang web, logo của bạn |
+| **Đầu vào** | Kịch bản (mỗi câu một dòng) và giọng đọc: tự thu (`.wav .mp3 .m4a`), dịch vụ TTS của bạn (ElevenLabs…), hoặc **giọng Microsoft miễn phí có sẵn trong skill** (không cần API key). Tùy chọn: clip quay màn hình, video 9:16, link trang web, logo của bạn |
 | **Căn giọng** | Nhận dạng giọng nói bằng Whisper chạy trên máy, khớp từng âm tiết của kịch bản với bản thu. Điểm cắt cảnh luôn nằm trong khoảng lặng |
 | **Hình ảnh** | Dùng video thật (tự cắt, tua cho khớp lời, làm mờ thông tin riêng tư) và ảnh tự chụp trang công khai, kèm logo chính hãng. Có thẻ prompt, thanh tiến trình các bước, ô comment và end card |
 | **Âm thanh** | Chuẩn hóa giọng về −21 LUFS, đặt sẵn: thud lúc mở đầu, swoosh mỗi lần chuyển cảnh, pop cho icon quan trọng, laser lúc bấm, tiếng chụp ảnh cho con số quan trọng, riser kịch tính tự cắt cho đoạn mở đầu, nhạc nền |
@@ -40,7 +40,7 @@ duyệt dựng hình của HyperFrames). macOS/Linux cũng chạy được nếu
    ```
    Chỉ muốn dùng trong một thư mục dự án thì clone vào `<thư mục>\.claude\skills\tao-video-short-bang-ai`.
 2. Nhấp đúp **`CAI-DAT.bat`** trong thư mục vừa tải. Script tự cài những gì còn thiếu: Python, FFmpeg, Node.js, Git Bash,
-   các thư viện Python, các skill HyperFrames (có `motion-doctrine` lo phần chuyển cảnh) và model Whisper.
+   các thư viện Python (gồm `edge-tts` — giọng đọc miễn phí của Microsoft), các skill HyperFrames (có `motion-doctrine` lo phần chuyển cảnh) và model Whisper.
 3. Khởi động lại Claude Code.
 
 ## Sử dụng

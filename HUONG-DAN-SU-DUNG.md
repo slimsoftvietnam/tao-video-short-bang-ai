@@ -18,7 +18,10 @@ Dành cho người không biết lập trình. Làm theo đúng thứ tự, mỗ
 ## 2. Chuẩn bị nội dung
 
 - **Kịch bản:** mỗi câu một dòng, viết đúng như lời sẽ đọc. Câu prompt muốn hiện đầy đủ trên video cũng là một dòng.
-- **Giọng đọc:** tự thu hoặc dùng TTS, lưu `.wav` hoặc `.mp3`. Thu ở chỗ yên tĩnh, ngừng một nhịp giữa các câu.
+- **Giọng đọc** — chọn 1 trong 3:
+  - **Tự thu** (tự nhiên nhất), lưu `.wav` hoặc `.mp3`. Thu ở chỗ yên tĩnh, ngừng một nhịp giữa các câu.
+  - **API TTS bạn đang dùng** (ElevenLabs…): dán API key khi Claude hỏi; Claude không lưu key vào file. Nên đổi key sau đó.
+  - **Giọng miễn phí của Microsoft** có sẵn trong skill, không cần tài khoản hay key (cần internet). Giọng nữ HoaiMy hoặc nam NamMinh, chỉnh được tốc độ. Nghe hơi máy hơn giọng thật.
 - **Tùy chọn:**
   - clip quay màn hình các bước thao tác;
   - video bạn muốn chèn, và câu nói muốn chèn video vào;
@@ -39,6 +42,8 @@ Tạo video tiktok về <chủ đề>. Đây là file âm thanh nói: "D:\thu-am
 Kịch bản:
 <dán kịch bản, mỗi câu một dòng>
 ```
+
+Chưa có file giọng đọc thì bỏ dòng "Đây là file âm thanh nói" — Claude sẽ hỏi bạn chọn cách tạo giọng. Muốn dùng luôn giọng miễn phí, viết thêm: `Dùng giọng AI miễn phí, giọng nam` (hoặc `giọng nữ`, `đọc nhanh hơn`).
 
 Claude sẽ hỏi lại nếu thiếu thông tin. Có clip quay màn hình chứa thông tin riêng (tên hội thoại, email, đường dẫn trên
 máy…) thì Claude tự làm mờ hoặc cắt bỏ, và báo cho bạn.

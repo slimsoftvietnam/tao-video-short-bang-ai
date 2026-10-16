@@ -23,7 +23,7 @@ SKILL = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # the voice-first pipeline (and the voice-last helpers) that every project carries in scripts/
 PIPELINE = [
-    "prep-voice.py", "asr.py", "plan-beats.py", "align-asr.py", "syl-times.py", "fix-syl.py", "silences.py",
+    "prep-voice.py", "tts.py", "asr.py", "plan-beats.py", "align-asr.py", "syl-times.py", "fix-syl.py", "silences.py",
     "karaoke.py", "add-sfx.py", "build.py", "make.sh", "make-media.py", "cdp.mjs", "sheet.py", "edit_helpers.py",
     "audit-sync.py", "word-times.py", "install-map.py", "recaption.py", "resfx.py", "synth-sfx.py",
 ]
